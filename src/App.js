@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from 'react';
+import Card from './components/Card';
+import User from './apis/User';
+import SearchBar from './components/SearchBar';
+import useUser from './hooks/useUser';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const [employee, search] = useUser('');
+    if (employee && !(employee.status === 400 || employee.status === 404)){
+    return (
+        <div className="ui segment">
+            <SearchBar onSubmit={search} />
+            <Card user={employee}/>
+        </div>
+    );
+    }
+    else if (employee.status === 400 || employee.status === 404){
+        return (
+            <div className="ui segment">
+                <SearchBar onSubmit={search} />
+                <div className="ui negative message">
+                    <i className="close icon"></i>
+                    <div className="header">
+                        Could not find an employee with the given name.
+                    </div>
+                    <p>Make sure you search given the currently active employees and that you only include a first and last name.</p>
+                </div>
+            </div>
+        );
+    }
+    return (
+        <div className="ui segment">
+            <SearchBar onSubmit={search} />
+            <div className="ui active inline loader"></div>
+        </div>
+    );
+};
 
 export default App;
